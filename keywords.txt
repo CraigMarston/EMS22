@@ -1,0 +1,23 @@
+#######################################
+# Syntax Coloring Map For AbsEncoder library
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+AbsEncoder	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+scan	KEYWORD2
+getAnalogData	KEYWORD2
+copyAllAnalog	KEYWORD2
+plotAngles	KEYWORD2
+copyRawData	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################

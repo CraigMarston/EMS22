@@ -1,5 +1,5 @@
-#ifndef AbsEncoder_h
-#define AbsEncoder_h
+#ifndef EMS22_h
+#define EMS22_h
 #include "Arduino.h"
 
 // Determines the maximum array size for declaration
@@ -27,8 +27,8 @@ class AbsEncoder {
       countSensors();
     }
 
-    void scan() {
-      /* Scan will fetch the raw position data for all encoders.
+    void read() {
+      /* read will fetch the raw position data for all encoders.
          The data will be stored in the data 2d bool array.
          The sequence and delays are from the datasheet for the sensor.
       */
@@ -149,7 +149,7 @@ class AbsEncoder {
 
 
     void copyRawData(bool list[maxSensorCount][16]) {
-      /* copy the raw data into the list
+      /* Copy the raw data into the list
          make sure to declare a big enogh 2d list
       */
       for (int j = 0; j < 2; j++) {
@@ -157,6 +157,16 @@ class AbsEncoder {
           list[j][i] = rawData[j][i];
         }
       }
+    }
+
+    int getResolution(){
+      /* Return the resolution setting
+       */
+      return resolution;
+    }
+
+    void changeResolution(int newR){
+      resolution = newR;
     }
 
 
@@ -167,6 +177,7 @@ class AbsEncoder {
     int sensorCount = 0;              // store the amount of sensors in use
     bool rawData[maxSensorCount][16]; // 2D list of raw data, one sensor per line, one bool per data.
     int analogData[maxSensorCount];   // List of analog data, one int per sensor.
+    int resolution = 1024;
 
 
     void startSensor() {

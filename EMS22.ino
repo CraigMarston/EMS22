@@ -1,9 +1,10 @@
-//example code for EMS22 library - Absolute Rotary Encoder
-// Written by William Hammer, NTNU 2023.
+/* This file is just for library testing. 
+   Check out the example for docs.
+   The code for EMS22A50-D28-LT6 - Absolute Rotary Encoder.
+   Written by William Hammer, NTNU 2023
+*/
 
-// get the library at https://github.com/autoHammer/EMS22
-#include "AbsEncoder.h"
-
+#include "EMS22.h"
 
 const int CLK = 11; //lilla
 const int DO  = 10; //blå digital output from encoder
@@ -21,7 +22,7 @@ void setup() {
 }
 
 void loop() {
-  Coder.scan();
+  Coder.read();
 
   int dataList[2];
   Coder.copyAllAnalog(dataList);

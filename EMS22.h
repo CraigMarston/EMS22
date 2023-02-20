@@ -3,12 +3,11 @@
 #include "Arduino.h"
 
 // Determines the maximum array size for declaration
-#define maxSensorCount 10
+#define maxEncoderCount 10
 
 class AbsEncoder {
     /* This is a class for handling the absolute encoder EMS22A50-D28-LT6
-       See README for usage and docs
-       Also see the examples
+       See example code for usage and docs.
     */
   public:
     AbsEncoder (int CLK_, int DO_, int CS_) {
@@ -24,19 +23,20 @@ class AbsEncoder {
       pinMode(DO, INPUT);
       pinMode(CS, OUTPUT);
 
-      countSensors();
+      // automatic detection of encoder count
+      countEncoders();
     }
 
     void read() {
-      /* read will fetch the raw position data for all encoders.
+      /* read() will fetch the raw position data for all encoders.
          The data will be stored in the data 2d bool array.
-         The sequence and delays are from the datasheet for the sensor.
+         The sequence and delays are from the datasheet for the encoder.
       */
       // start pulse
-      startSensor();
+      startEncoder();
 
       // clock pulse and data reading
-      for (int j = 0; j < sensorCount; j++) {
+      for (int j = 0; j < encoderCount; j++) {
         for (int i = 0; i < 16; i++) {
           digitalWrite(CLK, HIGH);
           delayMicroseconds(1);
@@ -55,13 +55,13 @@ class AbsEncoder {
     }
 
 
-    void countSensors() {
-      /* algorithm to find how many sensor is connected
+    void countEncoders() {
+      /* Algorithm to find how many encoders is connected.
       */
-      sensorCount = 0;
-      startSensor();
+      encoderCount = 0;
+      startEncoder();
 
-      // loop until all sensors is scanned
+      // loop until all encoders are scanned
       bool daisy = 1;
       while (daisy) {
         // look for data, daisy is 1 if any data is registrerd
@@ -77,58 +77,58 @@ class AbsEncoder {
         digitalWrite(CLK, HIGH);
         delayMicroseconds(1);
         digitalWrite(CLK, LOW);
-        // count the sensors
-        if (daisy) sensorCount ++;
+        // count the encoders
+        if (daisy) encoderCount ++;
       }
-      Serial.println(sensorCount);
+      Serial.println(encoderCount);
       // error handling
-      if (sensorCount > maxSensorCount) {
-        Serial.println("ERROR: Not connected the right amount of sensors!");
-        Serial.println("       Check if sensors is connected correctly");
-        Serial.print  ("       max amount of sensor = ");
-        Serial.println(maxSensorCount);
-        Serial.println("       increase this in library if you have more sensors");
-        sensorCount = 0;
+      if (encoderCount > maxEncoderCount) {
+        Serial.println("ERROR: Not connected the right amount of encoders!");
+        Serial.println("       Check if encoders is connected correctly");
+        Serial.print  ("       max amount of encoder = ");
+        Serial.println(maxEncoderCount);
+        Serial.println("       increase this in library if you have more encoders");
+        encoderCount = 0;
         delay(1000);
       }
     }
 
 
-    int getAnalogData(int sensorNr) {
-      /* Fetch the analog data for one sensor
+    int getAnalogData(int encoderNr) {
+      /* Fetch the analog data for one encoder.
       */
-      return analogData[sensorNr];
+      return analogData[encoderNr];
     }
 
 
-    void copyAllAnalog(int list[maxSensorCount]) {
-      /* Copy the date from analogData into a list declared in main
+    void copyAllAnalog(int list[maxEncoderCount]) {
+      /* Copy the date from analogData into a list declared in main.
       */
-      for (int c = 0; c < sensorCount; c++) {
+      for (int c = 0; c < encoderCount; c++) {
         list[c] = analogData[c];
       }
     }
 
 
     void plotAngles() {
-      /* Plots all the angles for all sensors.
+      /* Plots all the angles for all encoders.
          Use Tools -> serial plotter.
       */
-      for (int c = 0; c < sensorCount; c++) {
+      for (int c = 0; c < encoderCount; c++) {
         // Convert from analog to degree.
         float angle = analogToDeg(analogData[c]);
-        Serial.print("Sensor_nr_");
+        Serial.print("Encoder_nr_");
         Serial.print(c);
         Serial.print(":");
         Serial.print(angle);
         Serial.print(" ");
       }
-      if (sensorCount != 0) Serial.println("\n");
+      if (encoderCount != 0) Serial.println("\n");
     }
 
 
     void printRaw(int deviceNr) {
-      /* Frint all raw data from one sensor
+      /* Print all raw data from one encoder
          For debugging
       */
       Serial.print("Encoder nr. ");
@@ -148,7 +148,7 @@ class AbsEncoder {
     }
 
 
-    void copyRawData(bool list[maxSensorCount][16]) {
+    void copyRawData(bool list[maxEncoderCount][16]) {
       /* Copy the raw data into the list
          make sure to declare a big enogh 2d list
       */
@@ -174,15 +174,15 @@ class AbsEncoder {
     int CLK = 0;
     int DO  = 0;
     int CS  = 0;
-    int sensorCount = 0;              // store the amount of sensors in use
-    bool rawData[maxSensorCount][16]; // 2D list of raw data, one sensor per line, one bool per data.
-    int analogData[maxSensorCount];   // List of analog data, one int per sensor.
+    int encoderCount = 0;              // store the amount of encoders in use
+    bool rawData[maxEncoderCount][16]; // 2D list of raw data, one encoder per line, one bool per data.
+    int analogData[maxEncoderCount];   // List of analog data, one int per encoder.
     int resolution = 1024;
 
 
-    void startSensor() {
-      /* Start communication with sensor
-         Also tests if sensor is responding
+    void startEncoder() {
+      /* Start communication with encoder
+         Also test if encoder is responding
       */
       digitalWrite(CLK, HIGH);
       digitalWrite(CS, HIGH);
@@ -190,9 +190,9 @@ class AbsEncoder {
       digitalWrite(CS, LOW);
       delayMicroseconds(1);
 
-      // check sensor response
+      // check encoder response
       if (!digitalRead(DO)) {
-        if (sensorCount != 0) Serial.println("ERROR: No response from sensor");
+        if (encoderCount != 0) Serial.println("ERROR: No response from encoder");
       }
       digitalWrite(CLK, LOW);
       delayMicroseconds(1);

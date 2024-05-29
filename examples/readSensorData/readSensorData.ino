@@ -31,7 +31,7 @@ void loop() {
   // Fetch data. Input is the encoder index.
   // The encoder connected closest to the Arduino has index 0.
   // AnalogData is a number between 0 and 1024 (one loop).
-  int encoder0Data = Coder.getAnalogData(0)
+  int encoder0Data = Coder.getAnalogData(0);
   //Serial.println(encoder0Data);
 
   // plotAngles will format and print all angle data.
